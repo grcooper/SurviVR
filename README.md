@@ -32,20 +32,35 @@ This initially came from the repo: https://github.com/thadeaus/ProceduralGenerat
 There are a series of things in the Island Generator that allow you change how the island is viewed. All of these numbers can be updated in real time while playing the game. Values changed while in Play Mode WILL NOT SAVE.
 
 `Land MF` - Leave this as is
+
 `Render Distance` - Distance in game that new objects will be instantiated. Make this smaller if you want higher FPS
+
 `Width` - Width of the island
+
 `Height` - Height of the island
-`World Scale` - Scale relative to the player. Making this smaller makes the island a lot smaller, but no longer has lots of open plains. 
+
+`World Scale` - Scale relative to the player. Making this smaller makes the island a lot smaller, but no longer has lots of open plains.
+
 `Perlin Scale` - The size of the perlin map we are using,  higher makes the island more flat
+
 `HScale` - also controls the scaling on the height component of the island
+
 `Seed`/`Use random Seed` - Change this to have random seeds, for testing it is good to keep use random seed off, and using the same seed to see incremental changes.
+
 `Smooth Iterations` - Number of times the smoothing algorithm is run. The higher this is, the fewer small patchs of biomes will be seen.
-`Border Size` Currently I have a border around the island for the beach. This determines this
+
+`Border Size` Currently I have a border around the island for the beach, this is the size of that beach border
+
 `Type Percents` - This is still needed, but doesn't do as exactly as stated. It is a mapping to the Terrain type enum and allows you to change the amount of different types of terrain.
+
 `Round Number` - To give the world more of a poly feield, and avoid constant curves in the terrain, this rounds heights to a multiple of this number.
+
 `Environment Scale` - Scales the trees and rocks or other environmental objects placed in the future
+
 `Tree Prefabs` - The different trees placed on the island randomly selected
+
 `Stone Prefabs` - The different stones placed on the island randomly selected
+
 `Player move render distance` - Every time the player moves this distance we check if objects are inside of the `Render Distance` and update if they can be seen
 
 ## Systems we would like to have implemented:
