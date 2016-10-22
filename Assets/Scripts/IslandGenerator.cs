@@ -556,7 +556,9 @@ public class IslandGenerator : MonoBehaviour
 	{
 		if (treePrefabs.Length > 0)
 		{
-			GameObject tree = Instantiate(treePrefabs[psuedoRandom.Next(0, treePrefabs.Length)], CoordToWorldPoint(x, y), Quaternion.Euler(0, 0, 0)) as GameObject;
+            Vector3 treePos = CoordToWorldPoint(x, y) - new Vector3(0, 0.4f, 0);
+
+            GameObject tree = Instantiate(treePrefabs[psuedoRandom.Next(0, treePrefabs.Length)], treePos, Quaternion.Euler(0, 0, 0)) as GameObject;
 			tree.transform.localScale = new Vector3(psuedoRandom.Next(1, environmentScale), psuedoRandom.Next(1, environmentScale), psuedoRandom.Next(1, environmentScale));
 			map [x, y].addEnvironmentObject(tree);
 		}
