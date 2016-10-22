@@ -3,6 +3,24 @@
 This repo is here for some practice in VR and procedural generation of worlds. Idealy we would like to create a survival game in VR for the cardboard (and in future iterations the oculus or vive).
 This initially came from the repo: https://github.com/thadeaus/ProceduralGeneration however that was more of a sandbox and this is going to be more of an actual game
 
+# Building and Playing
+
+## For phone
+* Set up your phone with developer mode and USB debugging enabled
+* Attach phone to computer and click
+	* File -> Build & Run
+	* Build For android
+	* Make sure the main scene (or scene you want to test) is selected
+	* Click build and run
+	* tap screen to move, turn head to change directions
+
+## For Computer
+* Open the scene you want
+* Click the play button
+* Click to move
+* Hold ALT + Move mouse to look in the direction you want
+* You can always switch to scene mode while playing to view the scene and move using regular unity controls
+
 # Contributing
 
 * Please feel free to make PRs as needed. You will need to get unity from https://unity3d.com/
