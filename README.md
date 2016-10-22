@@ -47,16 +47,21 @@ There are a series of things in the Island Generator that allow you change how t
 `Tree Prefabs` - The different trees placed on the island randomly selected
 `Stone Prefabs` - The different stones placed on the island randomly selected
 `Player move render distance` - Every time the player moves this distance we check if objects are inside of the `Render Distance` and update if they can be seen
+`Min Mountain Width` - Minimum width of the mountain areas
+`Min Mountain Length` - Minimum length of the mountain areas
+`Should Generate Mountain` - If we want a mountain to be generated
 
 ## Systems we would like to have implemented:
 (in no particular order)
 
 * Better world generation (more interesting)
+	* Seperation of world generation tasks
 * Crafting system
 * Resource systems (health, hunger, energy etc)
 * Inventory system
 * AI's (enemies or friendlies to give the world a more lively feeling)
 * Eventually multiplayer would be great...
+* General Runtime Optimizations - getting high FPS in VR is one of the most important things
 
 
 ## Playing around with procedural generation in Unity

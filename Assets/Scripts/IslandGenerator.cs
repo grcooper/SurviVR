@@ -8,7 +8,7 @@ public class IslandGenerator : MonoBehaviour
     public MeshFilter landMF;
 
 	/** Enum to determine the differnt types or terrain - can add more later */
-    public enum TerrainType { None, Beach, Forest, Stone };
+    public enum TerrainType { None, Beach, Forest, Stone, Mountain };
 	/** The default terrain type - beach seemed correct as we are on an island */
     public static TerrainType baseTerrainType = TerrainType.Beach;
 
@@ -67,9 +67,9 @@ public class IslandGenerator : MonoBehaviour
 		}
     }
 
-    // Height and width of the island
+    // Length and width of the island
     public int width;
-    public int height;
+    public int length;
 	public int worldScale = 1;
 	
 	// Scale for our perlin noise - basically selecting a section of a perlin map
@@ -149,7 +149,7 @@ public class IslandGenerator : MonoBehaviour
     Vector3 CoordToWorldPoint(int x, int y)
     {
 		// Converting the tiles x,y coords to points in the game - the multiplication values should be made changeable TODO
-        Vector3 pos = new Vector3(-width / 2 + (x * worldScale) + .5f, map[x, y].getHeight(), -height / 2 + (y * worldScale) + .5f);
+        Vector3 pos = new Vector3(-width / 2 + (x * worldScale) + .5f, map[x, y].getHeight(), -length / 2 + (y * worldScale) + .5f);
         return pos;
     }
 
@@ -158,9 +158,9 @@ public class IslandGenerator : MonoBehaviour
 		GameObject player = GameObject.Find("CardboardMain");
 		if (player)
 		{
-			for (int x = 0; x < width; x++)
+			for (int x = 0; x < width; ++x)
 			{
-				for (int y = 0; y < height; y++)
+				for (int y = 0; y < length; ++y)
 				{			
 					if (Vector3.Distance (player.transform.position, CoordToWorldPoint (x, y)) > renderDistance)
 					{
@@ -182,9 +182,9 @@ public class IslandGenerator : MonoBehaviour
 		if (!firstGenerate)
 		{
 			// Clear out the evironment prefabs
-			for (int x = 0; x < width; x++)
+			for (int x = 0; x < width; ++x)
 			{
-				for (int y = 0; y < height; y++)
+				for (int y = 0; y < length; ++y)
 				{
 					map [x, y].cleanupEnvironmentObjects ();
 				}
@@ -205,7 +205,7 @@ public class IslandGenerator : MonoBehaviour
         
 
         Debug.Log("-- Start Generate --");
-        map = new TerrainTile[width, height];
+        map = new TerrainTile[width, length];
 
 		Debug.Log ("-- Random Heightmap --");
 		RandomHeightMap(baseTerrainType);
@@ -243,14 +243,18 @@ public class IslandGenerator : MonoBehaviour
         }
         Debug.Log("End Smooth");
 
+        Debug.Log("Start Mountain Generation");
+        generateMountain();
+        Debug.Log("End Mountain Generation");
+
         // Post processing beach and stone height sharpening/flattening
 		// TODO Put this into a function!
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < width; ++x)
         {
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < length; ++y)
             {
-                float distToPoint = Vector3.Distance(new Vector3(x,y,0), new Vector3(width/2,height/2,0));
-                //float distToCorner = Vector3.Distance(new Vector3(width/2,height/2,0), new Vector3(0,0,0));
+                float distToPoint = Vector3.Distance(new Vector3(x,y,0), new Vector3(width/2,length/2,0));
+                //float distToCorner = Vector3.Distance(new Vector3(width/2,length/2,0), new Vector3(0,0,0));
 
 				// Set the type to be beach when below the water.
 				if (map [x, y].getHeight () <= waterH)
@@ -262,7 +266,7 @@ public class IslandGenerator : MonoBehaviour
                 {
                     if (map[x, y].getType() == TerrainType.Forest)
                     {
-                        float newRand = (float)psuedoRandom.Next(0, 4) * (Mathf.Min(height - y, y, width - x, x) / (float)borderSize);
+                        float newRand = (float)psuedoRandom.Next(0, 4) * (Mathf.Min(length - y, y, width - x, x) / (float)borderSize);
 
                         if (newRand <= 2)
                         {
@@ -296,9 +300,9 @@ public class IslandGenerator : MonoBehaviour
 
 		Debug.Log ("-- Start Find Player Position --");
         bool foundStart = false;
-        for(int x = 0; x < width && !foundStart; x++)
+        for(int x = 0; x < width && !foundStart; ++x)
         {
-            for(int y = 0; y < height && !foundStart; y++)
+            for(int y = 0; y < length && !foundStart; ++y)
             {
                 if (map[x,y].getHeight() > waterH + 1f)
                 {
@@ -334,7 +338,7 @@ public class IslandGenerator : MonoBehaviour
     private void MovePlane(float h)
     {
         GameObject plane = GameObject.Find("Water");
-        Vector3 pos = CoordToWorldPoint(width / 2, height / 2);
+        Vector3 pos = CoordToWorldPoint(width / 2, length / 2);
         pos.y = h;
         
         plane.transform.position = pos;
@@ -348,13 +352,13 @@ public class IslandGenerator : MonoBehaviour
             seed = Time.time.ToString();
         }
         System.Random psuedoRandom = new System.Random(seed.GetHashCode()); */
-        for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; ++x) {
+			for (int y = 0; y < length; ++y) {
                 float xCoord = (float)(x);
 				float yCoord = (float)(y);
                 float h = Mathf.PerlinNoise(xCoord / perlinScale, yCoord / perlinScale);
                 //int tempBorder = borderSize + psuedoRandom.Next(borderSize / -2, borderSize / 2);
-                float distToPoint = Vector3.Distance(new Vector3(x, y, 0), new Vector3(width / 2, height / 2, 0));
+                float distToPoint = Vector3.Distance(new Vector3(x, y, 0), new Vector3(width / 2, length / 2, 0));
 
                 if (width/2 - borderSize > distToPoint )
                 {
@@ -372,9 +376,9 @@ public class IslandGenerator : MonoBehaviour
     // Randomly assigns values to be the toFill type based on global percentage of type
 	public void RandomFillMap(TerrainType toFill)
     {
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < width; ++x)
         {
-			for (int y = 0; y < height; y++){
+			for (int y = 0; y < length; ++y){
 
                 int rand = psuedoRandom.Next(0, 100);
                 if (rand < typePercents[(int)toFill])
@@ -388,9 +392,9 @@ public class IslandGenerator : MonoBehaviour
     // Smooths the map based on toSmooth - looks for surrounding points and if there is a majority - change this tile
     void SmoothMap(TerrainType toSmooth)
     {
-		for (int x = 0; x < width; x++)
+		for (int x = 0; x < width; ++x)
 		{
-			for (int y = 0; y < height; y++)
+			for (int y = 0; y < length; ++y)
 			{
 				int neighbourSmoothTiles = GetSameTerrainNeighbours(map[x,y].getType(), x, y);
 				if (neighbourSmoothTiles > 4) {
@@ -420,12 +424,12 @@ public class IslandGenerator : MonoBehaviour
         int startPosX = (posX - 1 < 0) ? posX : posX - 1;
         int startPosY = (posY - 1 < 0) ? posY : posY - 1;
         int endPosX = (posX + 1 > width - 1) ? posX : posX + 1;
-        int endPosY = (posY + 1 > height - 1) ? posY : posY + 1;
+        int endPosY = (posY + 1 > length - 1) ? posY : posY + 1;
 
 
-        for (int x = startPosX; x <= endPosX; x++)
+        for (int x = startPosX; x <= endPosX; ++x)
         {
-            for (int y = startPosY; y <= endPosY; y++)
+            for (int y = startPosY; y <= endPosY; ++y)
             {
 				if (map[x, y].getType() == type)
                 {
@@ -467,13 +471,13 @@ public class IslandGenerator : MonoBehaviour
 
 		// Create the initial vertices and set their colors
         int index = 0;
-        for(int x = 0; x < width; x++)
+        for(int x = 0; x < width; ++x)
         {
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < length; ++y)
             {
                 vertices.Add(CoordToWorldPoint(x, y));
                 map[x, y].setIndex(index);
-                index++;
+                ++index;
                 Color pointColor = new Color();
                 int rand = psuedoRandom.Next(0, 3);
                 switch (map[x, y].getType())
@@ -493,18 +497,18 @@ public class IslandGenerator : MonoBehaviour
         }
 
 		// Create the triangle arrays for the mesh
-        for(int x = 0; x < width; x++)
+        for(int x = 0; x < width; ++x)
         {
-            for(int y = 0; y < height; y++)
+            for(int y = 0; y < length; ++y)
             {
-                if(x-1 >= 0 && y + 1 < height)
+                if(x-1 >= 0 && y + 1 < length)
                 {
                     triangles.Add(map[x - 1, y + 1].getIndex());
                     triangles.Add(map[x, y + 1].getIndex());
                     triangles.Add(map[x, y].getIndex());
                     
                 }
-                if(x+1 < width && y + 1 < height)
+                if(x+1 < width && y + 1 < length)
                 {
                      triangles.Add(map[x, y].getIndex());
                      triangles.Add(map[x, y + 1].getIndex());
@@ -568,18 +572,52 @@ public class IslandGenerator : MonoBehaviour
 	{
 		if (stonePrefabs.Length > 0)
 		{
-			Debug.Log ("-- RAND: " + psuedoRandom.Next(1,15));
 			GameObject stone = Instantiate(stonePrefabs[psuedoRandom.Next(0, stonePrefabs.Length - 1)], CoordToWorldPoint(x, y), Quaternion.Euler(0, 0, 0)) as GameObject;
 			stone.transform.localScale = new Vector3(psuedoRandom.Next(1, environmentScale), psuedoRandom.Next(1, environmentScale), psuedoRandom.Next(1, environmentScale));
 			map [x, y].addEnvironmentObject(stone);
 		}
 	}
 
-	void GenerateEnvironment()
+    public int minMountainWidth = 100;
+    public int minMountainLength = 100;
+    public bool shouldGenerateMountain = true;
+
+    void generateMountain()
+    {
+        if (!shouldGenerateMountain)
+        {
+            return;
+        }
+        // TODO: This may need its own mesh/triangle set so that the traingles are not huge
+        /** steps:
+         * 1. create a random area for the mountain
+         * 2. scale the mountain upwards?
+         * 3. create mountain range like things using perlin noise?
+         * 4. smooth?
+         * 
+         **/
+
+        int mountainWidth = minMountainWidth + psuedoRandom.Next(0, width / 8);
+        int mountainLength = minMountainLength + psuedoRandom.Next(0, length / 8);
+
+        int xMountainStart = psuedoRandom.Next(0, width - mountainWidth);
+        int yMountainStart = psuedoRandom.Next(0, length - mountainLength);
+
+        for(int x = xMountainStart; x < xMountainStart + mountainWidth; ++x)
+        {
+            for(int y = yMountainStart; y < yMountainStart + mountainLength; ++y)
+            {
+                map[x, y].setHeight(50);
+            }
+        }
+
+    }
+
+    void GenerateEnvironment()
 	{
-		for (int x = 0; x < width; x++) 
+		for (int x = 0; x < width; ++x) 
 		{
-			for (int y = 0; y < height; y++) 
+			for (int y = 0; y < length; ++y) 
 			{
 				switch (map[x, y].getType())
 				{
