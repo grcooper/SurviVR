@@ -274,17 +274,6 @@ public class IslandGenerator : MonoBehaviour
                         }
                     }
                 }
-                /*
-                if(map[x,y].getType() == TerrainType.Stone)
-                {
-                    float newHScale = (((float)psuedoRandom.Next(100, 100))/100f);
-
-                    map[x, y].setHeight(map[x, y].getHeight() * newHScale);
-                }
-                else
-                {
-                    map[x, y].setHeight(map[x, y].getHeight() * 1f);
-                }*/
                 map[x, y].setHeight(Mathf.Round(map[x, y].getHeight() / roundNumber) * roundNumber);
             }
         }
@@ -347,11 +336,6 @@ public class IslandGenerator : MonoBehaviour
 
     // Sets the map's height values according to perlin noise generation in Unity
 	public void RandomHeightMap(TerrainType defaultType){
-        /*if (useRandomSeed)
-        {
-            seed = Time.time.ToString();
-        }
-        System.Random psuedoRandom = new System.Random(seed.GetHashCode()); */
         for (int x = 0; x < width; ++x) {
 			for (int y = 0; y < length; ++y) {
                 float xCoord = (float)(x);
@@ -580,7 +564,9 @@ public class IslandGenerator : MonoBehaviour
 
     public int minMountainWidth = 100;
     public int minMountainLength = 100;
+    public int mountainHeightScale = 50;
     public bool shouldGenerateMountain = true;
+    public int mountainBorder = 3;
 
     void generateMountain()
     {
@@ -607,7 +593,15 @@ public class IslandGenerator : MonoBehaviour
         {
             for(int y = yMountainStart; y < yMountainStart + mountainLength; ++y)
             {
-                map[x, y].setHeight(50);
+                float h = Mathf.PerlinNoise(x / perlinScale, y / perlinScale) * 60;
+                float distToPoint = Vector3.Distance(new Vector3(x, y, 0), new Vector3((mountainWidth / 2) + xMountainStart, (mountainLength / 2) + yMountainStart, 0));
+
+                if (Mathf.Min(mountainWidth, mountainLength) / 2 - mountainBorder < distToPoint)
+                {
+                    h = h * 0.5f;
+                }
+                map[x, y].setHeight(h);
+                map[x, y].setTypeAndBase(TerrainType.Stone);
             }
         }
 
